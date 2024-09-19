@@ -1,0 +1,17 @@
+model Dish {
+    id           Int    @id @default(autoincrement())
+    name         String
+    description  String
+    instructions Json
+
+    creator   User @relation(fields: [creatorId], references: [id])
+    creatorId Int
+
+    ingredients Ingredient[] @relation("DishIngredient")
+}
+
+model Ingredient {
+    id     Int    @id @default(autoincrement())
+    name   String
+    dishes Dish[] @relation("DishIngredient")
+}
