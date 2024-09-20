@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../database/prisma.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,12 @@ export class AuthService {
       const user = await this.prisma.user.create({
         data: { email, name, password: hashedPassword },
       });
-      return this.generateToken(user);
+
+      const tokens = await this.generateTokens(user);
+
+      await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+      return tokens;
     } catch (error) {
       throw new BadRequestException('User already exists');
     }
@@ -36,7 +42,11 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException('Invalid credentials');
 
-    return this.generateToken(user);
+    const tokens = await this.generateTokens(user);
+
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+    return tokens;
   }
 
   async getUserByAccessToken(accessToken: string) {
@@ -51,8 +61,53 @@ export class AuthService {
     }
   }
 
-  private generateToken(user: { id: number; email: string }) {
+  async refreshTokens(refreshToken: string) {
+    const { sub: userId } = this.jwtService.verify(refreshToken, {
+      secret: process.env.JWT_SECRET,
+    });
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user || !user.refreshToken) {
+      throw new UnauthorizedException('Access Denied');
+    }
+
+    const isRefreshTokenValid = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+    if (!isRefreshTokenValid) {
+      throw new UnauthorizedException('Access Denied');
+    }
+
+    const tokens = await this.generateTokens(user);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
+  }
+
+  private async generateTokens(user: User) {
     const payload = { sub: user.id, email: user.email };
-    return { access_token: this.jwtService.sign(payload) };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.ACCESS_EXPIRESIN,
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.REFRESH_EXPIRESIN,
+    });
+
+    return { accessToken, refreshToken };
+  }
+
+  private async updateRefreshToken(userId: number, refreshToken: string) {
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: hashedRefreshToken },
+    });
   }
 }
