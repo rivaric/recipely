@@ -23,4 +23,7 @@ export class CreateDishDto {
 
   @ApiProperty({ type: [Number] })
   ingredientIds: number[];
+
+  @ApiProperty({ type: 'string', format: 'binary' })
+  image: Express.Multer.File;
 }

@@ -7,12 +7,25 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  Req,
 } from '@nestjs/common';
 import { DishService } from './dish.service';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiParam,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { ImageUpload } from '../decorators/image-upload.decorarot';
+import { UploadImageDto } from '../dto/image-upload.dto';
 
 @ApiTags('Dish')
 @ApiBearerAuth()
@@ -24,6 +37,21 @@ export class DishController {
   @Post()
   create(@Body() createDishDto: CreateDishDto) {
     return this.dishService.create(createDishDto);
+  }
+
+  @Post(':id/add-image')
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({
+    name: 'id',
+    required: true,
+  })
+  @ApiBody({
+    type: UploadImageDto,
+  })
+  @ImageUpload()
+  addImageForDish(@Param('id') id: string, @Req() req: any) {
+    const imageUrl = req.imageUrl;
+    return this.dishService.addImageForDish(Number(id), imageUrl);
   }
 
   @Get()

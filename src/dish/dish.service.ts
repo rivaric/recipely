@@ -28,6 +28,15 @@ export class DishService {
     });
   }
 
+  addImageForDish(dishId: number, imageUrl: string) {
+    return this.prisma.dish.update({
+      where: { id: dishId },
+      data: {
+        image: imageUrl,
+      },
+    });
+  }
+
   findAll() {
     return this.prisma.dish.findMany();
   }
