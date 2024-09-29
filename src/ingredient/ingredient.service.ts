@@ -12,6 +12,13 @@ export class IngredientService {
     });
   }
 
+  addImageForIngredient(ingredientId: number, imageUrl) {
+    return this.prisma.ingredient.update({
+      where: { id: ingredientId },
+      data: { image: imageUrl },
+    });
+  }
+
   findAll() {
     return this.prisma.ingredient.findMany();
   }

@@ -12,7 +12,8 @@ model Dish {
 }
 
 model Ingredient {
-    id     Int    @id @default(autoincrement())
+    id     Int     @id @default(autoincrement())
     name   String
-    dishes Dish[] @relation("DishIngredient")
+    image  String?
+    dishes Dish[]  @relation("DishIngredient")
 }

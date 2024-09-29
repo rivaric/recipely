@@ -7,9 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  UseInterceptors,
-  UploadedFile,
-  BadRequestException,
   Req,
 } from '@nestjs/common';
 import { DishService } from './dish.service';
@@ -20,7 +17,6 @@ import {
   ApiBody,
   ApiConsumes,
   ApiParam,
-  ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
