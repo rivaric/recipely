@@ -10,4 +10,13 @@ export class UserService {
       where: { id },
     });
   }
+
+  addImageForUser(id: number, imageUrl: string) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        image: imageUrl,
+      },
+    });
+  }
 }
