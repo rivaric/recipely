@@ -31,7 +31,7 @@ export class UserController {
 
     const user = await this.userService.findOne(userId);
 
-    const { password, ...rest } = user;
+    const { password, refreshToken, ...rest } = user;
 
     return rest;
   }
