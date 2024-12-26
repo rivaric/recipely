@@ -5,9 +5,13 @@ import { DishModule } from './dish/dish.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { InstructionService } from './instruction/instruction.service';
+import { InstructionModule } from './instruction/instruction.module';
+import { PrismaModule } from './database/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     AuthModule,
     IngredientModule,
     DishModule,
@@ -16,8 +20,9 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'static'),
       serveRoot: '/static',
     }),
+    InstructionModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [InstructionService],
 })
 export class AppModule {}

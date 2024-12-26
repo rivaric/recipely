@@ -9,7 +9,7 @@ export class DishService {
   create({
     name,
     description,
-    instructions,
+    instructionIds,
     ingredientIds,
     creatorId,
   }: CreateDishDto) {
@@ -17,7 +17,9 @@ export class DishService {
       data: {
         name,
         description,
-        instructions: JSON.stringify(instructions),
+        instructions: {
+          connect: instructionIds.map((id) => ({ id })),
+        },
         creator: {
           connect: { id: creatorId },
         },
@@ -38,12 +40,23 @@ export class DishService {
   }
 
   findAll() {
-    return this.prisma.dish.findMany();
+    return this.prisma.dish.findMany({
+      include: {
+        instructions: true,
+        ingredients: true,
+        creator: true,
+      },
+    });
   }
 
   findOne(id: number) {
     return this.prisma.dish.findUnique({
       where: { id },
+      include: {
+        instructions: true,
+        ingredients: true,
+        creator: true,
+      },
     });
   }
 
@@ -52,7 +65,7 @@ export class DishService {
     {
       name,
       description,
-      instructions,
+      instructionIds,
       ingredientIds,
       creatorId,
     }: UpdateDishDto,
@@ -62,7 +75,9 @@ export class DishService {
       data: {
         name,
         description,
-        instructions: JSON.stringify(instructions),
+        instructions: {
+          connect: instructionIds.map((id) => ({ id })),
+        },
         creator: {
           connect: { id: creatorId },
         },

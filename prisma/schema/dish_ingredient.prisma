@@ -1,9 +1,9 @@
 model Dish {
-    id           Int     @id @default(autoincrement())
+    id           Int           @id @default(autoincrement())
     name         String
     image        String?
     description  String
-    instructions Json
+    instructions Instruction[]
 
     creator   User @relation(fields: [creatorId], references: [id])
     creatorId Int

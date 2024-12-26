@@ -5,6 +5,7 @@ import {
   Req,
   UnauthorizedException,
   Post,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -65,5 +66,10 @@ export class UserController {
     const { password, refreshToken, ...rest } = user;
 
     return rest;
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(+id);
   }
 }

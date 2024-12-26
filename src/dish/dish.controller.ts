@@ -47,7 +47,7 @@ export class DishController {
   @ImageUpload()
   addImageForDish(@Param('id') id: string, @Req() req: any) {
     const imageUrl = req.imageUrl;
-    return this.dishService.addImageForDish(Number(id), imageUrl);
+    return this.dishService.addImageForDish(+id, imageUrl);
   }
 
   @Get()

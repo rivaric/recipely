@@ -47,7 +47,7 @@ export class IngredientController {
   @ImageUpload()
   addImageForIngredient(@Param('id') id: string, @Req() req: any) {
     const imageUrl = req.imageUrl;
-    return this.ingredientService.addImageForIngredient(Number(id), imageUrl);
+    return this.ingredientService.addImageForIngredient(+id, imageUrl);
   }
 
   @Get()

@@ -1,0 +1,9 @@
+model Instruction {
+    id          Int    @id @default(autoincrement())
+    step_number Int
+    image       String
+    description String
+
+    dish   Dish? @relation(fields: [dishId], references: [id])
+    dishId Int?
+}
